@@ -206,6 +206,7 @@ class Crash_Bam_Zowie {
 
 	    remove_meta_box( 'postimagediv', $this->plugin_slug, 'side' );
 
+	    add_meta_box( 'postimagediv', __('Comic Art'), 'post_thumbnail_meta_box', $this->plugin_slug, 'normal', 'high' );
 
 	}
 
