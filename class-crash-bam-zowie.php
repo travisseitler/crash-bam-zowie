@@ -177,16 +177,16 @@ class Crash_Bam_Zowie {
 
 		$screen = get_current_screen();
 
-		if ( 'term' != $screen->base || $this->plugin_slug != $screen->taxonomy ) { return $classes; }
+		if ( 'term' != $screen->base || $this->plugin_slug . '-issues' != $screen->taxonomy ) { return $classes; }
 
 		$term_ID = absint( $_REQUEST['tag_ID'] );
-		$term    = get_term( $term_ID, $this->plugin_slug, OBJECT, 'edit' );
+		$term    = get_term( $term_ID, $this->plugin_slug . '-issues', OBJECT, 'edit' );
 
 		$classes = explode( ' ', $classes );
 
 		$additional_classes = array(
 			'term-id-' . $term->term_id,
-			'term-' . $this->plugin_slug . '-' . $term->slug,
+			'term-' . $this->plugin_slug . '-issues' . '-' . $term->slug,
 		);
 
 		$classes = array_merge( $classes, $additional_classes );
