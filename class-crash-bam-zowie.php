@@ -30,7 +30,7 @@ class Crash_Bam_Zowie {
 		// Define custom taxonomy on init
 		add_action( 'init',                     array( $this, 'define_taxonomy' ) );
 		add_action( 'admin_init',               array( $this, 'define_taxonomy' ) );
-		
+
 		// Add a custom Settings Page in the Admin
 		add_action( 'admin_menu',               array( $this, 'settings_page' ) );
 
@@ -60,8 +60,8 @@ class Crash_Bam_Zowie {
 		$plural_name    = 'Comic Pages';
 		$args = array(
 			'public'                => true,
-			'menu_position'         => 31,
 			'menu_icon'             => "dashicons-layout",
+			'menu_position'         => null,
 			'capability_type'       => array( 'post', 'posts' ),
 			'map_meta_cap'          => true,
 			'hierarchical'          => false,
@@ -82,10 +82,10 @@ class Crash_Bam_Zowie {
 				'not_found'                  => 'No ' . $plural_name . ' found',
 				'not_found_in_trash'         => 'No ' . $plural_name . ' found in Trash',
 			),
-			'queryable'             => true,
+			'publicly_queryable'    => true,
 		);
 
-		register_post_type( $this->plugin_slug . '-pages', $args );
+		register_post_type( $this->plugin_slug, $args );
 
 	}
 
@@ -123,13 +123,13 @@ class Crash_Bam_Zowie {
 			),
 		);
 
-		register_taxonomy( $this->plugin_slug . '-issues', $this->plugin_slug . '-pages', $args );
+		register_taxonomy( $this->plugin_slug . '-issues', $this->plugin_slug, $args );
 
 	}
 
     /**
      * Add a link to the Settings page in the WordPress Admin Menu
-	 * 
+	 *
 	 * @since 0.1.1
      */
     function settings_page() {
@@ -147,24 +147,24 @@ class Crash_Bam_Zowie {
 
     /**
      * Create a Settings page
-	 * 
+	 *
 	 * @since 0.1.1
      */
     function create_settings_page() {
-		
+
 		$title = 'CRASH! BAM! ZOWIE! Webcomic Management Settings';
-		
+
 		print '<div class="wrap">';
-	
+
 		print '<h1>' . $title . '</h1>';
-		
+
 		print '</div>'; // .wrap
-		
+
     }
 
 	/**
 	 * Admin: Add term-specific classes to body tag
-	 * 
+	 *
 	 * With extra classes, we can more cleanly target specific Admin
 	 * pages when applying custom CSS rules
 	 *
@@ -175,7 +175,7 @@ class Crash_Bam_Zowie {
 		$screen = get_current_screen();
 
 		if ( 'term' != $screen->base || $this->plugin_slug != $screen->taxonomy ) { return $classes; }
-		
+
 		$term_ID = absint( $_REQUEST['tag_ID'] );
 		$term    = get_term( $term_ID, $this->plugin_slug, OBJECT, 'edit' );
 
