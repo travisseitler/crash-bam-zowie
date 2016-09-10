@@ -57,7 +57,7 @@ class Crash_Bam_Zowie {
 		/**
 		 * Define the Custom Post Type
 		 */
-		$top_level_name = 'Comic Pages';
+		$top_level_name = 'Webcomics';
 		$front_name     = 'Comic Pages';
 		$singular_name  = 'Comic Page';
 		$plural_name    = 'Comic Pages';
@@ -138,9 +138,9 @@ class Crash_Bam_Zowie {
   function settings_page() {
 
     add_submenu_page(
-			$this->plugin_slug . '-pages',
+			'edit.php?post_type=' . $this->plugin_slug,
       'CRASH! BAM! ZOWIE! Webcomic Management Settings',
-			'CBZ Settings',
+			'Settings',
 			'manage_options',
 			'cbz_settings',
       array( $this, 'create_settings_page' )
@@ -155,15 +155,10 @@ class Crash_Bam_Zowie {
    */
   function create_settings_page() {
 
-		$title = 'CRASH! BAM! ZOWIE! Webcomic Management Settings';
+		// Include code for admin options page
+		include_once( 'crash-bam-zowie-admin.php' );
 
-		print '<div class="wrap">';
-
-		print '<h1>' . $title . '</h1>';
-
-		print '</div>'; // .wrap
-
-    }
+  }
 
 	/**
 	 * Admin: Add term-specific classes to body tag

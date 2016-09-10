@@ -7,7 +7,7 @@
  * @author     Travis Seitler <travis@webseitler.com>
  * @copyright  Copyright (c) 2016, Travis Seitler
  * @license    https://www.gnu.org/licenses/gpl-2.0.html
- * 
+ *
  * @wordpress-plugin
  * Plugin Name: CRASH! BAM! ZOWIE!
  * Plugin URI:  http://www.webseitler.com/wordpress-plugins/crash-bam-zowie/
@@ -28,9 +28,6 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Includes the class that provides the functionality for the plugin
 include_once( 'class-crash-bam-zowie.php' );
-
-// Include code for admin options page
-include_once( 'crash-bam-zowie-admin.php' );
 
 /**
  * Instantiates the plugin and initializes the functionality necessary for WordPress
