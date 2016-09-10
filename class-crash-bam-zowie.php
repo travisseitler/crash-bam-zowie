@@ -31,6 +31,9 @@ class Crash_Bam_Zowie {
 		add_action( 'init',                     array( $this, 'define_taxonomy' ) );
 		add_action( 'admin_init',               array( $this, 'define_taxonomy' ) );
 
+		// Adjust the admin display for
+		add_action( 'do_meta_boxes',            array( $this, 'change_image_box' ) );
+
 		// Add a custom Settings Page in the Admin
 		add_action( 'admin_menu',               array( $this, 'settings_page' ) );
 
@@ -127,30 +130,30 @@ class Crash_Bam_Zowie {
 
 	}
 
-    /**
-     * Add a link to the Settings page in the WordPress Admin Menu
+  /**
+   * Add a link to the Settings page in the WordPress Admin Menu
 	 *
 	 * @since 0.1.1
-     */
-    function settings_page() {
+   */
+  function settings_page() {
 
-        add_submenu_page(
+    add_submenu_page(
 			$this->plugin_slug . '-pages',
-            'CRASH! BAM! ZOWIE! Webcomic Management Settings',
+      'CRASH! BAM! ZOWIE! Webcomic Management Settings',
 			'CBZ Settings',
 			'manage_options',
 			'cbz_settings',
-            array( $this, 'create_settings_page' )
-        );
+      array( $this, 'create_settings_page' )
+    );
 
-    }
+  }
 
-    /**
-     * Create a Settings page
+  /**
+   * Create a Settings page
 	 *
 	 * @since 0.1.1
-     */
-    function create_settings_page() {
+   */
+  function create_settings_page() {
 
 		$title = 'CRASH! BAM! ZOWIE! Webcomic Management Settings';
 
@@ -191,6 +194,18 @@ class Crash_Bam_Zowie {
 		$classes = implode( ' ', $classes );
 
 		return $classes;
+
+	}
+
+	/**
+	 * Admin: Modify the appearance of the Featured Image block
+	 *
+	 * @since 0.1.1
+	 */
+	function change_image_box()	{
+
+	    remove_meta_box( 'postimagediv', $this->plugin_slug, 'side' );
+
 
 	}
 
