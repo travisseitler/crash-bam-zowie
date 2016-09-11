@@ -1,5 +1,10 @@
 <?php
 
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 class Crash_Bam_Zowie {
 
 	/**
@@ -7,7 +12,7 @@ class Crash_Bam_Zowie {
 	 *
 	 * @since 0.1.1
 	 */
-	protected $plugin_version = '0.1.1';
+	protected $plugin_version = '0.5';
 
 	/**
 	 * Unique Identifier
@@ -30,6 +35,10 @@ class Crash_Bam_Zowie {
 		// Define custom taxonomy on init
 		add_action( 'init',                                           array( $this, 'define_taxonomy' ) );
 		add_action( 'admin_init',                                     array( $this, 'define_taxonomy' ) );
+
+		// Custom rewrite rules for series, issues/chapters, and pages
+		add_filter( 'post_type_link',                                 array( $this, 'page_permalinks' ), 10, 4);
+		add_filter( 'rewrite_rules_array',                            array( $this, 'insert_rewrite_rules') );
 
 		// Adjust the admin display for our Custom Post Type
 		add_action( 'do_meta_boxes',                                  array( $this, 'change_featured_image_box' ) );
@@ -58,14 +67,10 @@ class Crash_Bam_Zowie {
 	 */
 	function define_posttype() {
 
-		/**
-		 * Post Thumbnails: WE HAZ DEM.
-		 */
+		/** Post Thumbnails: WE HAZ DEM. */
 		add_theme_support('post-thumbnails');
 
-		/**
-		 * Define the Custom Post Type
-		 */
+		/** Define the Custom Post Type */
 		$top_level_name = 'Webcomics';
 		$front_name     = 'Comic Pages';
 		$singular_name  = 'Comic Page';
@@ -80,6 +85,10 @@ class Crash_Bam_Zowie {
 			'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'author' ),
 			'has_archive'           => true,
 			'can_export'            => true,
+			'rewrite'              => array(
+				'slug'                       => 'comics/%crash_bam_zowie_filters%',
+				'with_front'                 => false,
+			),
 			'labels'                => array(
 				'name'                       => $front_name,
 				'singular_name'              => $singular_name,
@@ -116,6 +125,8 @@ class Crash_Bam_Zowie {
 			'show_ui'           => true,
 			'show_admin_column' => true,
 			'hierarchical'      => true,
+			'rewrite'           => array( 'slug' => 'comics' ),
+			'popular_items'     => null,
 			'labels'            => array(
 				'name'                       => $plural_name,
 				'singular_name'              => $singular_name,
@@ -146,6 +157,92 @@ class Crash_Bam_Zowie {
 		    'show_in_rest' => true,
 		);
 		register_meta( $this->plugin_slug . '-issues', 'cbz_cover_logo', $args );
+
+	}
+
+	/**
+	 * Custom Rewrite Rules: Replace slug placeholder
+	 *
+	 * @since 0.5
+	 */
+	function page_permalinks( $url, $post )	{
+
+		if ( false !== strpos( $url, '%crash_bam_zowie_filters%' ) ) {
+
+			$the_terms = get_the_terms( $post->ID, $this->plugin_slug . '-issues' );
+
+			$slug = 'uncategorized/item';
+
+	    if( is_array( $the_terms ) ) {
+
+				$term = array_pop( $the_terms );
+
+				$slug = $term->slug;
+
+				if( $term->parent > 0 )	{
+
+					$parent = get_term( $term->parent, $this->plugin_slug . '-issues' );
+
+					$slug = $parent->slug . '/' . $slug;
+
+				}
+
+			}
+
+			$url = str_replace( '%crash_bam_zowie_filters%', $slug, $url );
+
+	  }
+
+	  return $url;
+
+	}
+
+	/**
+	 * Custom Rewrite Rules: Insert new rules
+	 *
+	 * @since 0.5
+	 */
+	function insert_rewrite_rules( $rules ) {
+
+		$protocol = ( !empty($_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443 ) ? "https://" : "http://";
+    $home = $_SERVER['HTTP_HOST'] . '/';
+
+		$newrules = array();
+
+		/** Grab all terms, build hierarchies, then foreach that array to generate a set of rewrite rules. */
+		$args=array(
+			'post_type'           => $this->plugin_slug,
+			'post_status'         => 'publish',
+			'posts_per_page'      => -1,
+			'ignore_sticky_posts' => 1,
+			'orderby'             => 'menu_order',
+			'order'               => 'ASC',
+		);
+
+		$query = new WP_Query($args);
+
+		if( $query->have_posts() ) {
+
+			while( $query->have_posts() ) {
+
+				$query->the_post();
+
+				global $post;
+
+				$newrules[ '^' . str_replace( $protocol . $home, '', get_post_permalink() ) . '?$' ] = 'index.php?post_type=' . $this->plugin_slug . '&name=' . $post->post_name;
+
+			}
+
+		}
+
+		wp_reset_postdata();
+
+		/** Anything that doesn't have an explicit rule should fall under a wildcard match that presumes it's content. */
+		$newrules[ '^comics/(.+?)/(.+?)/(.+?)/?$' ]                                = 'index.php?' . $this->plugin_slug . '-issues=$matches[3]';
+		$newrules[ '^comics/(.+?)/(.+?)/?$' ]                                      = 'index.php?' . $this->plugin_slug . '-issues=$matches[2]';
+		$newrules[ '^comics/(.+?)/?$' ]                                            = 'index.php?' . $this->plugin_slug . '-issues=$matches[1]';
+
+		return $newrules + $rules;
 
 	}
 
@@ -302,7 +399,7 @@ class Crash_Bam_Zowie {
 	}
 
  /*
-	* Add script
+	* Add custom Javascript to the WP Admin
 	* @since 1.0.0
 	*/
 	public function admin_add_script() { ?>
@@ -348,8 +445,12 @@ class Crash_Bam_Zowie {
 			});
 		});
 	</script>
-	<?php }
+	<?php
+ 	}
 
+	/**
+	 * Enqueue Media Library helpers in Admin
+	 */
 	function load_wp_media_files() {
 		wp_enqueue_media();
 	}

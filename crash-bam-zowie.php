@@ -2,22 +2,22 @@
 /**
  * @package    WordPress
  * @subpackage Crash_Bam_Zowie
- * @link       http://www.webseitler.com/wordpress-plugins/crash-bam-zowie/
- * @version    0.1.1
+ * @link       https://github.com/travisseitler/crash-bam-zowie
+ * @version    0.5
  * @author     Travis Seitler <travis@webseitler.com>
  * @copyright  Copyright (c) 2016, Travis Seitler
  * @license    https://www.gnu.org/licenses/gpl-2.0.html
  *
  * @wordpress-plugin
  * Plugin Name: CRASH! BAM! ZOWIE!
- * Plugin URI:  http://www.webseitler.com/wordpress-plugins/crash-bam-zowie/
+ * Plugin URI:  https://github.com/travisseitler/crash-bam-zowie
  * Description: Easily manage and publish your webcomics with WordPress.
  * Text Domain: crash-bam-zowie
- * Version:     0.1.1
+ * Version:     0.5
  * Domain Path: /languages/
  * Author:      Travis Seitler
  * Author URI:  http://www.webseitler.com/
- * License:     GPL2
+ * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
